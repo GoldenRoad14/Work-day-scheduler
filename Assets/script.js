@@ -1,54 +1,51 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
+
 $(function () {
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  //
-
-
-  
-  var container = $(".container-fluid");
+  // Save to local storage with rowID and value when save button is clicked
+$('.container-fluid').on('click', '.btn', function(event){
+  event.preventDefault();
+  let hourRowId = $(this).parent().attr('id'); 
+  let description = $(this).siblings('.description');
+  let inputValue = description.val();
+  localStorage.setItem(hourRowId, inputValue);
+})
+  // Define variables 
+  let container = $(".container-fluid");
   let today = dayjs();
   let currentHour = today.hour();
-let workDayHours = ['9', '10', '11', '12', '13', '14', '15', '16', '21', '22'];
+  let workDayHours = ['9', '10', '11', '12', '13', '14', '15', '16', '17', '18'];
+  let storedValues = [];
+
+  // Pull any saved items from local storage and store them in an array
+for(let i = 0; i < localStorage.length; i++){
+  let key = localStorage.key(i);
+  let value = localStorage.getItem(key);
+  let keyValuePair = {key: key, value: value};
+  storedValues.push(keyValuePair)
+}
+
+ // Create rows for each hour of the work day
 for(let i = 0; i < workDayHours.length; i++){
+  let hourRowId = "hour-" + workDayHours[i]; // Define hourRowId as a variable for comparison
   let hourRow = $('<div>',{
-    id: "hour-" + workDayHours[i],
-    class: "row time-block " + (workDayHours[i] < currentHour ? "past" : workDayHours[i] == currentHour ? "present" : "future")
+    id: hourRowId,
+    class: "row time-block " + (workDayHours[i] < currentHour ? "past" : workDayHours[i] == currentHour ? "present" : "future") // past/present/future logic for designating class of hourRow
   });
-    let formattedHour = workDayHours[i] > 12 ? workDayHours[i] - 12  + " PM" : workDayHours[i] + ' AM';
-hourRow.append("<div class='col-2 col-md-1 hour text-center py-3'>" + formattedHour + "</div>");
-hourRow.append("<textarea class='col-8 col-md-10 description' rows='3'> </textarea>");
-hourRow.append("<button class='btn saveBtn col-2 col-md-1' aria-label='save' id='btn-" + workDayHours[i] + "'><i class='fas fa-save' aria-hidden='true'></i></button>");
+    let formattedHour = workDayHours[i] > 12 ? workDayHours[i] - 12  + " PM" : workDayHours[i] + ' AM'; // Format hours from 24 hour to 12 hour
+  hourRow.append("<div class='col-2 col-md-1 hour text-center py-3'>" + formattedHour + "</div>");
+  hourRow.append("<textarea class='col-8 col-md-10 description' rows='3'> </textarea>");
+  hourRow.append("<button class='btn saveBtn col-2 col-md-1' aria-label='save'><i class='fas fa-save' aria-hidden='true'></i></button>");
+
+  // Assigns any items from local storage that match the current hourRowId and populates the corresponding text area
+for(let i = 0; i < storedValues.length; i++)
+  if(storedValues[i].key == hourRowId){
+    hourRow.find('.description').val(storedValues[i].value);
+  }
+ // Adds created row to the container
 container.append(hourRow);
 }
 
-
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
-
-
-  //
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-
-
-
-
-  //
-  // TODO: Add code to display the current date in the header of the page.
-  
+ // Pulls current time & date and displays in proper format
   let currentDay = today.format('dddd MMM, DD YYYY' + ' - ' +  'h:mm a');
   $('#currentDay').text(currentDay);
 
 });
-

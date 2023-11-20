@@ -9,15 +9,46 @@ $(function () {
   // time-block containing the button that was clicked? How might the id be
   // useful when saving the description in local storage?
   //
+
+
+  
+  var container = $(".container-fluid");
+  let today = dayjs();
+  let currentHour = today.hour();
+let workDayHours = ['9', '10', '11', '12', '13', '14', '15', '16', '21', '22'];
+for(let i = 0; i < workDayHours.length; i++){
+  let hourRow = $('<div>',{
+    id: "hour-" + workDayHours[i],
+    class: "row time-block " + (workDayHours[i] < currentHour ? "past" : workDayHours[i] == currentHour ? "present" : "future")
+  });
+    let formattedHour = workDayHours[i] > 12 ? workDayHours[i] - 12  + " PM" : workDayHours[i] + ' AM';
+hourRow.append("<div class='col-2 col-md-1 hour text-center py-3'>" + formattedHour + "</div>");
+hourRow.append("<textarea class='col-8 col-md-10 description' rows='3'> </textarea>");
+hourRow.append("<button class='btn saveBtn col-2 col-md-1' aria-label='save' id='btn-" + workDayHours[i] + "'><i class='fas fa-save' aria-hidden='true'></i></button>");
+container.append(hourRow);
+}
+
+
   // TODO: Add code to apply the past, present, or future class to each time
   // block by comparing the id to the current hour. HINTS: How can the id
   // attribute of each time-block be used to conditionally add or remove the
   // past, present, and future classes? How can Day.js be used to get the
   // current hour in 24-hour time?
+
+
   //
   // TODO: Add code to get any user input that was saved in localStorage and set
   // the values of the corresponding textarea elements. HINT: How can the id
   // attribute of each time-block be used to do this?
+
+
+
+
   //
   // TODO: Add code to display the current date in the header of the page.
+  
+  let currentDay = today.format('dddd MMM, DD YYYY' + ' - ' +  'h:mm a');
+  $('#currentDay').text(currentDay);
+
 });
+
